@@ -21,6 +21,76 @@ Ashneer Grover was the obvious choice. Nobody gives more brutal, specific, hones
 
 So I built the thing I personally wanted to use.
 
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client["Browser (React / Next.js App Router)"]
+        direction TB
+        App["App.tsx\n— screen routing\n— global state\n— sessionStorage persistence"]
+
+        App --> Lobby["LobbyScreen\nSpotlight stage + CTA"]
+        App --> Setup["SetupScreen\nIdea / sector / stage form"]
+        App --> Tank["TankScreen\n8-round live chat"]
+        App --> Verdict["VerdictScreen\nScore + breakdown + share card"]
+
+        subgraph TankUI["Tank Screen Internals"]
+            direction LR
+            Portrait["AshneerPortrait\nPhoto + mood label\n+ vignette"]
+            Meter["FundabilityMeter\nVertical/horizontal\nscore bar"]
+            Chat["Chat Panel\nStreaming word-by-word\nmessage bubbles"]
+            Loader["PenTapLoader\nStartup term display"]
+        end
+
+        Tank --> TankUI
+    end
+
+    subgraph Server["Next.js API Route  /api/chat"]
+        Route["route.ts\nPOST handler\n— streaming SSE\n— non-streaming (summarization)"]
+    end
+
+    subgraph AI["Anthropic Claude"]
+        Claude["claude-sonnet-4-20250514"]
+    end
+
+    subgraph Prompts["Prompt Engineering"]
+        SysPrompt["systemPrompt.ts\nAshneer persona\n+ startup context\n+ conversation summary"]
+        SumPrompt["summarize.ts\nMid-conversation\nsummarization prompt"]
+    end
+
+    Chat -- "user message\n+ context window" --> Route
+    Route -- "system prompt\n+ messages" --> Claude
+    Claude -- "streamed JSON\n{mood, fundability,\ndialogue, verdict}" --> Route
+    Route -- "SSE chunks" --> Chat
+
+    Route -.-> SysPrompt
+    Route -.-> SumPrompt
+
+    App -- "save/load state" --> Session["sessionStorage"]
+
+    style Client fill:#1a1612,stroke:#e8891a,color:#f5ede0
+    style Server fill:#1a1612,stroke:#e8891a,color:#f5ede0
+    style AI fill:#1a1612,stroke:#f0a500,color:#f5ede0
+    style Prompts fill:#1a1612,stroke:#9a8e82,color:#f5ede0
+    style TankUI fill:#221e1a,stroke:#e8891a,color:#f5ede0
+```
+
+### Screen flow
+
+```
+Lobby ──→ Setup ──→ Tank (8 rounds) ──→ Verdict
+  ↑                   │                    │
+  └───────────────────┘ (exit)             │
+  └────────────────────────────────────────┘ (new pitch)
+```
+
+### Key data flow
+
+1. **Setup → Tank** — `StartupData` (idea, sector, stage, strength, weakness) is injected into the system prompt.
+2. **Tank ↔ API** — Each user message is sent with the system prompt + conversation context. Claude returns structured JSON (`mood`, `fundability`, `dialogue`, optional `verdict`).
+3. **Context management** — After 8 messages, a background summarization call compresses history. Subsequent calls use summary + a sliding window of recent messages.
+4. **Persistence** — `App.tsx` saves the full session (screen, messages, mood, fundability, summary, verdict) to `sessionStorage` on every state change and restores on reload.
+
 ## Tech stack
 
 - **Framework** — Next.js 14 (App Router), TypeScript
