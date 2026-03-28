@@ -6,8 +6,8 @@ interface LobbyScreenProps {
   onEnter: () => void;
 }
 
-const TYPEWRITER_TEXT = "Ashneer Grover aapka intezaar kar raha hai.";
-const CHAR_DELAY = 55;
+const TYPEWRITER_TEXT = "The Tank awaits.";
+const CHAR_DELAY = 70;
 
 export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
   const [displayedText, setDisplayedText] = useState("");
@@ -28,7 +28,7 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
         }
       }, CHAR_DELAY);
       return () => clearInterval(interval);
-    }, 600);
+    }, 800);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -46,93 +46,179 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
     <div
       style={{
         minHeight: "100vh",
+        background: "#0e0c0b",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 32,
-        padding: "24px 16px",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Spotlight beam from above */}
+      <div
+        style={{
+          position: "absolute",
+          top: -120,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 500,
+          height: "80%",
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(232,137,26,0.16) 0%, rgba(232,137,26,0.05) 40%, transparent 70%)",
+          pointerEvents: "none",
+          animation: "spotlightPulse 4s ease-in-out infinite",
+        }}
+      />
+
+      {/* Secondary ambient glow on the stage floor */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "12%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 500,
+          height: 160,
+          background:
+            "radial-gradient(ellipse, rgba(232,137,26,0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+          filter: "blur(30px)",
+        }}
+      />
+
+      {/* Floating particles */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            bottom: `${25 + (i % 3) * 8}%`,
+            left: `calc(50% + ${(i - 2) * 50}px)`,
+            width: i % 2 === 0 ? 3 : 2,
+            height: i % 2 === 0 ? 3 : 2,
+            borderRadius: "50%",
+            background: `rgba(232,137,26,${0.3 + (i % 3) * 0.15})`,
+            animation: `floatParticle ${3 + i * 0.6}s ease-in-out infinite`,
+            animationDelay: `${i * 0.9}s`,
+          }}
+        />
+      ))}
+
+      {/* Title — large hero text */}
+      <h1
+        style={{
+          fontFamily: "var(--font-playfair), serif",
+          fontSize: "clamp(36px, 6vw, 64px)",
+          fontWeight: 700,
+          letterSpacing: "0.06em",
+          color: "rgba(255,255,255,0.9)",
+          animation: "fadeIn 1.2s ease 0.2s both",
+          textTransform: "uppercase" as const,
+          marginBottom: 12,
+          zIndex: 1,
+          textAlign: "center",
+          lineHeight: 1.1,
+        }}
+      >
+        Pitch Tank
+      </h1>
       <span
         style={{
           fontFamily: "var(--font-dm), sans-serif",
-          fontSize: 11,
-          letterSpacing: "0.3em",
-          color: "var(--text-dim)",
-          animation: "fadeIn 0.8s ease 0.2s both",
+          fontSize: "clamp(12px, 1.5vw, 15px)",
+          letterSpacing: "0.5em",
+          color: "rgba(232,137,26,0.6)",
+          animation: "fadeIn 1.2s ease 0.4s both",
           textTransform: "uppercase" as const,
+          marginBottom: 56,
+          zIndex: 1,
         }}
       >
-        Pitch Tank India
+        India
       </span>
 
+      {/* Podium + Microphone */}
       <div
         style={{
-          width: 160,
-          height: 220,
-          background: "#141210",
-          border: "1.5px solid rgba(232,137,26,0.3)",
-          borderRadius: "4px 4px 0 0",
           position: "relative",
-          animation: "doorGlow 3s ease-in-out infinite",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 48,
+          zIndex: 1,
+          animation: "fadeIn 1.4s ease 0.5s both",
         }}
       >
+        {/* Microphone */}
+        <div style={{ position: "relative", height: 90, marginBottom: 4 }}>
+          {/* Mic head */}
+          <div
+            style={{
+              width: 16,
+              height: 22,
+              borderRadius: "50% 50% 40% 40%",
+              background: "#2a2825",
+              border: "1px solid rgba(232,137,26,0.35)",
+              margin: "0 auto",
+              boxShadow: "0 0 12px rgba(232,137,26,0.15)",
+            }}
+          />
+          {/* Mic stand */}
+          <div
+            style={{
+              width: 2,
+              height: 66,
+              background: "linear-gradient(to bottom, rgba(232,137,26,0.45), rgba(232,137,26,0.08))",
+              margin: "0 auto",
+            }}
+          />
+        </div>
+
+        {/* Podium surface */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 1,
-            background: "rgba(232,137,26,0.2)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            right: 16,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 8,
+            width: 140,
             height: 8,
-            borderRadius: "50%",
-            background: "rgba(232,137,26,0.6)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 20,
-            left: 20,
-            right: 20,
-            bottom: "55%",
-            border: "1px solid rgba(232,137,26,0.08)",
+            background: "linear-gradient(to right, transparent, rgba(232,137,26,0.18), transparent)",
             borderRadius: 2,
           }}
         />
+        {/* Podium body */}
         <div
           style={{
-            position: "absolute",
-            top: "52%",
-            left: 20,
-            right: 20,
-            bottom: 20,
-            border: "1px solid rgba(232,137,26,0.08)",
-            borderRadius: 2,
+            width: 115,
+            height: 45,
+            background: "#141210",
+            borderLeft: "1px solid rgba(232,137,26,0.12)",
+            borderRight: "1px solid rgba(232,137,26,0.12)",
+            borderBottom: "1px solid rgba(232,137,26,0.08)",
+            clipPath: "polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)",
+          }}
+        />
+        {/* Stage floor line */}
+        <div
+          style={{
+            width: 280,
+            height: 1,
+            background: "linear-gradient(to right, transparent, rgba(232,137,26,0.12), transparent)",
+            marginTop: 2,
           }}
         />
       </div>
 
+      {/* Typewriter text */}
       <p
         style={{
           fontFamily: "var(--font-playfair), serif",
           fontStyle: "italic",
-          fontSize: 22,
-          color: "var(--text-primary)",
+          fontSize: "clamp(22px, 3vw, 30px)",
+          color: "#f5ede0",
           textAlign: "center",
-          minHeight: 33,
+          minHeight: 44,
           lineHeight: 1.5,
+          zIndex: 1,
+          marginBottom: 16,
         }}
       >
         {displayedText}
@@ -141,9 +227,9 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
             style={{
               display: "inline-block",
               width: 2,
-              height: 22,
-              background: "var(--ashneer-accent)",
-              marginLeft: 2,
+              height: "0.9em",
+              background: "#e8891a",
+              marginLeft: 3,
               verticalAlign: "text-bottom",
               animation: "pulseOpacity 0.8s ease-in-out infinite",
             }}
@@ -151,47 +237,54 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
         )}
       </p>
 
+      {/* Subtext */}
       <p
         style={{
           fontFamily: "var(--font-dm), sans-serif",
-          fontSize: 13,
-          color: "var(--text-muted)",
+          fontSize: 14,
+          color: "rgba(255,255,255,0.35)",
           opacity: showSubtext ? 1 : 0,
           transition: "opacity 0.6s ease",
+          zIndex: 1,
+          marginBottom: 40,
+          letterSpacing: "0.01em",
         }}
       >
-        60 seconds. Apna idea ready rakh.
+        Ashneer Grover is waiting. Have your idea ready.
       </p>
 
+      {/* CTA Button */}
       <button
         onClick={onEnter}
         style={{
           fontFamily: "var(--font-playfair), serif",
           fontStyle: "italic",
-          fontSize: 16,
-          border: "2px solid var(--ashneer-accent)",
+          fontSize: 17,
+          border: "2px solid #e8891a",
           background: "transparent",
-          padding: "14px 36px",
-          color: "var(--ashneer-accent)",
+          padding: "16px 48px",
+          color: "#e8891a",
           borderRadius: 4,
           cursor: "pointer",
           opacity: showButton ? 1 : 0,
           transform: showButton ? "translateY(0)" : "translateY(12px)",
-          transition: "opacity 0.6s ease, transform 0.6s ease, background 0.2s, color 0.2s",
-          letterSpacing: "0.02em",
+          transition:
+            "opacity 0.6s ease, transform 0.6s ease, background 0.2s, color 0.2s",
+          letterSpacing: "0.04em",
+          zIndex: 1,
         }}
         onMouseEnter={(e) => {
           const btn = e.currentTarget;
-          btn.style.background = "var(--ashneer-accent)";
+          btn.style.background = "#e8891a";
           btn.style.color = "#0e0c0b";
         }}
         onMouseLeave={(e) => {
           const btn = e.currentTarget;
           btn.style.background = "transparent";
-          btn.style.color = "var(--ashneer-accent)";
+          btn.style.color = "#e8891a";
         }}
       >
-        Tank mein Jaao →
+        Take the Stage →
       </button>
     </div>
   );

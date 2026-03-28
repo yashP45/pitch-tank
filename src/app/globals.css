@@ -1,9 +1,5 @@
 :root {
   --bg-deep: #0e0c0b;
-  --bg-spotlight-cold: radial-gradient(ellipse at top, #1a1410 0%, #0e0c0b 100%);
-  --bg-spotlight-suspicious: radial-gradient(ellipse at top, #1a1814 0%, #0e0c0b 100%);
-  --bg-spotlight-impressed: radial-gradient(ellipse at top, #2a1f0e 0%, #0e0c0b 100%);
-  --bg-spotlight-invested: radial-gradient(ellipse at top, #2e1e08 0%, #0e0c0b 100%);
   --surface: #1a1612;
   --surface-raised: #221e1a;
   --ashneer-accent: #e8891a;
@@ -65,9 +61,16 @@ body::after {
   60% { transform: rotate(0deg) translateY(0); }
 }
 
-@keyframes doorGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(232,137,26,0.1); }
-  50% { box-shadow: 0 0 40px rgba(232,137,26,0.25); }
+@keyframes spotlightPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-60px) translateX(15px); opacity: 0; }
 }
 
 @keyframes borderPulse {

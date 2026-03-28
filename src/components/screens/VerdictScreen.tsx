@@ -12,11 +12,11 @@ function getZoneColor(value: number): string {
 }
 
 function getZoneVerdict(value: number): string {
-  if (value <= 25) return "Bilkul Nahi. Next.";
-  if (value <= 50) return "Abhi Nahi. Kaam Kar.";
-  if (value <= 60) return "Interesting Hai. But...";
-  if (value <= 75) return "Main Sun Raha Hoon.";
-  return "Bhai, Deal Karte Hain.";
+  if (value <= 25) return "Absolutely Not. Next.";
+  if (value <= 50) return "Not Yet. Keep Working.";
+  if (value <= 60) return "Interesting. But...";
+  if (value <= 75) return "I'm Listening.";
+  return "Let's Make a Deal.";
 }
 
 interface WordByWordTextProps {
@@ -109,7 +109,7 @@ export default function VerdictScreen({ verdict, onRestart }: VerdictScreenProps
             animation: "pulseOpacity 1.5s ease-in-out infinite",
           }}
         >
-          Ashneer ka faisla aa raha hai...
+          Ashneer's verdict is coming...
         </p>
       </div>
     );
@@ -141,7 +141,7 @@ export default function VerdictScreen({ verdict, onRestart }: VerdictScreenProps
             textTransform: "uppercase" as const,
           }}
         >
-          Ashneer Ka Faisla
+          The Verdict
         </p>
 
         <div style={{ textAlign: "center", marginBottom: 8 }}>
@@ -175,10 +175,10 @@ export default function VerdictScreen({ verdict, onRestart }: VerdictScreenProps
         <div style={{ height: 1, background: "var(--border-subtle)", margin: "32px 0" }} />
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
-          <VerdictRow label="Jo achha laga:" value={verdictData.respected} />
-          <VerdictRow label="Jo nahi chala:" value={verdictData.killShot} />
-          <VerdictRow label="Agar yeh fix ho:" value={verdictData.conditional} />
-          <VerdictRow label="Gut feel:" value={verdictData.gutLine} highlight />
+          <VerdictRow label="What Impressed:" value={verdictData.respected} />
+          <VerdictRow label="What Didn't Work:" value={verdictData.killShot} />
+          <VerdictRow label="If You Fix This:" value={verdictData.conditional} />
+          <VerdictRow label="Gut Feel:" value={verdictData.gutLine} highlight />
         </div>
 
         {dialogue && (
@@ -239,7 +239,7 @@ export default function VerdictScreen({ verdict, onRestart }: VerdictScreenProps
               btn.style.color = "var(--text-muted)";
             }}
           >
-            Naya Pitch Karo
+            New Pitch
           </button>
         </div>
       </div>

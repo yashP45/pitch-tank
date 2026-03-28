@@ -20,10 +20,10 @@ const SECTORS = [
 ];
 
 const STAGES = [
-  "Sirf Idea Hai",
-  "MVP Banaya Hai",
-  "Revenue Aa Raha Hai",
-  "Scale Kar Raha Hoon",
+  "Just an Idea",
+  "Built an MVP",
+  "Generating Revenue",
+  "Scaling Up",
 ];
 
 const inputStyle: React.CSSProperties = {
@@ -123,6 +123,7 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
           borderRadius: 20,
           padding: 40,
           border: "1px solid var(--border-subtle)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
           animation: "fadeUp 0.6s ease both",
         }}
       >
@@ -156,13 +157,13 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>Tera idea kya hai? 2 line mein bata.</label>
+          <label style={labelStyle}>What's your idea? Describe in 2 lines.</label>
           <textarea
             rows={3}
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
             onInput={handleTextareaInput}
-            placeholder="Apna idea yahan likho..."
+            placeholder="Describe your startup idea here..."
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(232,137,26,0.5)")}
             onBlur={(e) => (e.target.style.borderColor = "var(--border-subtle)")}
@@ -170,17 +171,17 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>Kaunsa sector hai tera?</label>
+          <label style={labelStyle}>Which sector are you in?</label>
           <PillSelector options={SECTORS} value={sector} onChange={setSector} />
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>Stage kahan ho abhi?</label>
+          <label style={labelStyle}>What stage are you at?</label>
           <PillSelector options={STAGES} value={stage} onChange={setStage} />
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>Ek cheez jo tune already validate ki ho.</label>
+          <label style={labelStyle}>One thing you've already validated.</label>
           <input
             type="text"
             value={strength}
@@ -193,12 +194,12 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <label style={labelStyle}>Aur ek cheez jahan tu confident nahi hai.</label>
+          <label style={labelStyle}>One area where you're not confident.</label>
           <input
             type="text"
             value={weakness}
             onChange={(e) => setWeakness(e.target.value)}
-            placeholder="Honest reh — Ashneer vaise bhi figure out kar lega"
+            placeholder="Be honest — Ashneer will figure it out anyway"
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(232,137,26,0.5)")}
             onBlur={(e) => (e.target.style.borderColor = "var(--border-subtle)")}
@@ -214,7 +215,7 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
             marginBottom: 28,
           }}
         >
-          Numbers exact nahi pata? Koi baat nahi — jo pata hai wo bol.
+          Don't know exact numbers? That's fine — share what you know.
         </p>
 
         <button
@@ -235,7 +236,7 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
             transition: "opacity 0.2s, background 0.2s",
           }}
         >
-          Pitch Shuru Karo →
+          Start Pitch →
         </button>
       </div>
     </div>
