@@ -117,7 +117,8 @@ export default function TankScreen({
       ? (messages.length - 1) / 2
       : messages.length / 2
   );
-  const canRequestVerdict = messages.length >= 16;
+  const canRequestVerdict = exchangeCount >= 8;
+  const hasEnoughForVerdict = messages.length >= 2;
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -403,18 +404,27 @@ export default function TankScreen({
             </button>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Sach mein?</span>
+              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{hasEnoughForVerdict ? "Faisla sunna hai?" : "Sach mein?"}</span>
               <button
-                onClick={onExit}
+                onClick={() => {
+                  setConfirmingExit(false);
+                  if (hasEnoughForVerdict) {
+                    handleVerdictRequest();
+                  } else {
+                    onExit();
+                  }
+                }}
+                disabled={loading}
                 style={{
                   background: "none",
-                  border: "1px solid var(--meter-red)",
-                  color: "var(--meter-red)",
+                  border: "1px solid var(--ashneer-accent)",
+                  color: "var(--ashneer-accent)",
                   fontSize: 11,
                   padding: "3px 10px",
                   borderRadius: 3,
-                  cursor: "pointer",
+                  cursor: loading ? "not-allowed" : "pointer",
                   fontFamily: "var(--font-dm), sans-serif",
+                  opacity: loading ? 0.5 : 1,
                 }}
               >
                 Haan

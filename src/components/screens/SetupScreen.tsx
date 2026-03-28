@@ -5,6 +5,7 @@ import type { StartupData } from "@/lib/types";
 
 interface SetupScreenProps {
   onSubmit: (startup: StartupData) => void;
+  onBack: () => void;
 }
 
 const SECTORS = [
@@ -76,7 +77,7 @@ function PillSelector({ options, value, onChange }: PillSelectorProps) {
   );
 }
 
-export default function SetupScreen({ onSubmit }: SetupScreenProps) {
+export default function SetupScreen({ onSubmit, onBack }: SetupScreenProps) {
   const [idea, setIdea] = useState("");
   const [sector, setSector] = useState("");
   const [stage, setStage] = useState("");
@@ -127,6 +128,24 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
           animation: "fadeUp 0.6s ease both",
         }}
       >
+        <button
+          onClick={onBack}
+          style={{
+            background: "none",
+            border: "none",
+            color: "var(--text-dim)",
+            fontFamily: "var(--font-dm), sans-serif",
+            fontSize: 13,
+            cursor: "pointer",
+            padding: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          ← Lobby
+        </button>
+
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
           <img
             src="/ashneer.png"

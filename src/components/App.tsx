@@ -179,7 +179,7 @@ export default function App() {
       case "lobby":
         return <LobbyScreen onEnter={handleEnterLobby} />;
       case "setup":
-        return <SetupScreen onSubmit={handleSubmitSetup} />;
+        return <SetupScreen onSubmit={handleSubmitSetup} onBack={() => changeScreen("lobby")} />;
       case "tank":
         return (
           <TankScreen
