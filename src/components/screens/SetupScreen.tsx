@@ -20,10 +20,10 @@ const SECTORS = [
 ];
 
 const STAGES = [
-  "Just an Idea",
-  "Built an MVP",
-  "Generating Revenue",
-  "Scaling Up",
+  "Sirf Idea Hai",
+  "MVP Banaya Hai",
+  "Revenue Aa Raha Hai",
+  "Scale Kar Rahe Hain",
 ];
 
 const inputStyle: React.CSSProperties = {
@@ -128,24 +128,19 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 36 }}>
-          <div
+          <img
+            src="/ashneer.png"
+            alt="Ashneer Grover"
             style={{
               width: 36,
               height: 36,
               borderRadius: "50%",
-              background: "var(--ashneer-accent)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-dm), sans-serif",
-              fontSize: 13,
-              fontWeight: 700,
-              color: "#0e0c0b",
+              objectFit: "cover",
+              objectPosition: "center 15%",
               flexShrink: 0,
+              border: "1.5px solid rgba(232,137,26,0.3)",
             }}
-          >
-            AG
-          </div>
+          />
           <div>
             <div style={{ fontFamily: "var(--font-dm), sans-serif", fontSize: 13, color: "var(--text-primary)" }}>
               Ashneer Grover
@@ -157,13 +152,13 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>What's your idea? Describe in 2 lines.</label>
+          <label style={labelStyle}>Tera idea kya hai? 2 line mein bata.</label>
           <textarea
             rows={3}
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
             onInput={handleTextareaInput}
-            placeholder="Describe your startup idea here..."
+            placeholder="Apna idea yahan likh..."
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(232,137,26,0.5)")}
             onBlur={(e) => (e.target.style.borderColor = "var(--border-subtle)")}
@@ -171,17 +166,17 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>Which sector are you in?</label>
+          <label style={labelStyle}>Kaunsa sector hai?</label>
           <PillSelector options={SECTORS} value={sector} onChange={setSector} />
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>What stage are you at?</label>
+          <label style={labelStyle}>Stage kahan tak hai?</label>
           <PillSelector options={STAGES} value={stage} onChange={setStage} />
         </div>
 
         <div style={{ marginBottom: 28 }}>
-          <label style={labelStyle}>One thing you've already validated.</label>
+          <label style={labelStyle}>Ek cheez jo tune validate ki ho.</label>
           <input
             type="text"
             value={strength}
@@ -194,16 +189,27 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
         </div>
 
         <div style={{ marginBottom: 12 }}>
-          <label style={labelStyle}>One area where you're not confident.</label>
+          <label style={labelStyle}>Kahan confident nahi hai?</label>
           <input
             type="text"
             value={weakness}
             onChange={(e) => setWeakness(e.target.value)}
-            placeholder="Be honest — Ashneer will figure it out anyway"
+            placeholder="Honest reh — Ashneer vaise bhi figure out kar lega"
             style={inputStyle}
             onFocus={(e) => (e.target.style.borderColor = "rgba(232,137,26,0.5)")}
             onBlur={(e) => (e.target.style.borderColor = "var(--border-subtle)")}
           />
+          <p
+            style={{
+              fontFamily: "var(--font-dm), sans-serif",
+              fontSize: 11,
+              color: "var(--text-dim)",
+              fontStyle: "italic",
+              marginTop: 8,
+            }}
+          >
+            Yeh sirf tere pitch ko better banane ke liye hai. Judge nahi karunga.
+          </p>
         </div>
 
         <p
@@ -215,7 +221,7 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
             marginBottom: 28,
           }}
         >
-          Don't know exact numbers? That's fine — share what you know.
+          Exact numbers nahi pata? Koi nahi — jo pata hai wo bol.
         </p>
 
         <button
@@ -236,7 +242,7 @@ export default function SetupScreen({ onSubmit }: SetupScreenProps) {
             transition: "opacity 0.2s, background 0.2s",
           }}
         >
-          Start Pitch →
+          Pitch Shuru Kar →
         </button>
       </div>
     </div>

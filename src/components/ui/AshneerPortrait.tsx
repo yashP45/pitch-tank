@@ -9,19 +9,19 @@ interface MoodConfig {
 
 const MOOD_CONFIG: Record<Mood, MoodConfig> = {
   disinterested: {
-    label: "NOT INTERESTED",
+    label: "BILKUL INTERESTED NAHI",
     borderGlow: "rgba(68,68,68,0.4)",
   },
   suspicious: {
-    label: "WATCHING YOU...",
+    label: "DEKH RAHA HOON...",
     borderGlow: "rgba(232,137,26,0.3)",
   },
   impressed: {
-    label: "INTERESTING",
+    label: "INTERESTING HAI",
     borderGlow: "rgba(232,137,26,0.6)",
   },
   invested: {
-    label: "LET'S TALK",
+    label: "BAAT KARTE HAIN",
     borderGlow: "var(--ashneer-accent)",
   },
 };
@@ -60,6 +60,15 @@ export default function AshneerPortrait({ mood = "disinterested", size = "normal
             objectFit: "cover",
             objectPosition: "center 15%",
             display: "block",
+          }}
+        />
+        {/* Vignette overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%)",
+            pointerEvents: "none",
           }}
         />
       </div>

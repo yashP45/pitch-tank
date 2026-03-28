@@ -93,13 +93,30 @@ export default function TankScreen({
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>([]);
+  const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>(() => {
+    return messages.map((msg) => {
+      if (msg.role === "assistant") {
+        try {
+          const parsed = JSON.parse(msg.content) as AshneerResponse;
+          return { role: "assistant" as const, text: parsed.dialogue, mood: parsed.mood };
+        } catch {
+          return { role: "assistant" as const, text: msg.content };
+        }
+      }
+      return { role: "user" as const, text: msg.content };
+    });
+  });
   const [confirmingExit, setConfirmingExit] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isMobile = useIsMobile();
 
-  const exchangeCount = Math.floor(messages.length / 2);
+  const hasOpenedRef = useRef(messages.length > 0);
+  const exchangeCount = Math.floor(
+    messages.length > 0 && messages[0].role === "assistant"
+      ? (messages.length - 1) / 2
+      : messages.length / 2
+  );
   const canRequestVerdict = messages.length >= 16;
 
   useEffect(() => {
@@ -135,6 +152,51 @@ export default function TankScreen({
     }
     return fullText;
   };
+
+  const triggerOpening = useCallback(async () => {
+    if (hasOpenedRef.current || messages.length > 0 || loading) return;
+    hasOpenedRef.current = true;
+    setLoading(true);
+
+    try {
+      const systemPrompt = buildSystemPrompt(startup, null);
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Main apna idea pitch karna chahta hoon." }],
+          systemPrompt,
+          stream: true,
+        }),
+      });
+
+      if (!response.ok) throw new Error("API request failed");
+      const fullText = await consumeStream(response);
+      const parsed: AshneerResponse = JSON.parse(fullText);
+
+      const { mood: newMood, fundability: newFund, dialogue } = parsed;
+      if (newMood) onMoodChange(newMood);
+      if (newFund != null) onFundabilityChange(newFund);
+
+      const assistantMessage: ChatMessage = { role: "assistant", content: fullText };
+      setMessages([assistantMessage]);
+      setDisplayMessages([{ role: "assistant", text: dialogue, mood: newMood }]);
+    } catch {
+      setDisplayMessages([{
+        role: "assistant",
+        text: "Bhai connection cut gaya. Phir bol.",
+        isError: true,
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  }, [startup, messages.length, loading, onMoodChange, onFundabilityChange, setMessages]);
+
+  useEffect(() => {
+    if (messages.length === 0 && !hasOpenedRef.current) {
+      triggerOpening();
+    }
+  }, [triggerOpening, messages.length]);
 
   const triggerSummarization = useCallback(
     async (msgs: ChatMessage[]) => {
@@ -236,7 +298,7 @@ export default function TankScreen({
           ...prev,
           {
             role: "assistant",
-            text: "Connection lost. Please try again.",
+            text: "Bhai connection cut gaya. Phir bol.",
             isError: true,
           },
         ]);
@@ -279,7 +341,7 @@ export default function TankScreen({
   };
 
   const handleVerdictRequest = useCallback(() => {
-    sendMessage("I've completed my pitch. Give me your verdict.", true);
+    sendMessage("Mera pitch ho gaya. Ab faisla sunao.", true);
   }, [sendMessage]);
 
   const handleTextareaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
@@ -293,10 +355,99 @@ export default function TankScreen({
       style={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: isMobile ? "column" : "row",
+        flexDirection: "column",
         fontFamily: "var(--font-dm), sans-serif",
       }}
     >
+      {/* HEADER BAR */}
+      <div
+        style={{
+          height: 44,
+          background: "var(--surface)",
+          borderBottom: "1px solid var(--border-subtle)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 20px",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-playfair), serif",
+            fontSize: 14,
+            color: "var(--text-primary)",
+            fontWeight: 600,
+            letterSpacing: "0.03em",
+          }}
+        >
+          Pitch Tank
+        </span>
+        <div>
+          {!confirmingExit ? (
+            <button
+              onClick={() => setConfirmingExit(true)}
+              style={{
+                background: "var(--meter-red)",
+                border: "none",
+                color: "#fff",
+                fontSize: 12,
+                cursor: "pointer",
+                fontFamily: "var(--font-dm), sans-serif",
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontWeight: 500,
+              }}
+            >
+              Pitch Chhodo ×
+            </button>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Sach mein?</span>
+              <button
+                onClick={onExit}
+                style={{
+                  background: "none",
+                  border: "1px solid var(--meter-red)",
+                  color: "var(--meter-red)",
+                  fontSize: 11,
+                  padding: "3px 10px",
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-dm), sans-serif",
+                }}
+              >
+                Haan
+              </button>
+              <button
+                onClick={() => setConfirmingExit(false)}
+                style={{
+                  background: "none",
+                  border: "1px solid var(--border-subtle)",
+                  color: "var(--text-muted)",
+                  fontSize: 11,
+                  padding: "3px 10px",
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-dm), sans-serif",
+                }}
+              >
+                Nahi
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          minHeight: 0,
+        }}
+      >
       {/* LEFT PANEL */}
       <div
         style={{
@@ -311,123 +462,11 @@ export default function TankScreen({
           gap: isMobile ? 16 : 24,
           borderRight: isMobile ? "none" : "1px solid var(--border-subtle)",
           borderBottom: isMobile ? "1px solid var(--border-subtle)" : "none",
-          position: "relative",
         }}
       >
         <AshneerPortrait mood={mood} size={isMobile ? "small" : "normal"} />
         <FundabilityMeter value={fundability} horizontal={isMobile} />
 
-        {/* Mobile exit button (top-right corner) */}
-        {isMobile && (
-          <div style={{ position: "absolute", top: 8, right: 12, zIndex: 2 }}>
-            {!confirmingExit ? (
-              <button
-                onClick={() => setConfirmingExit(true)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "var(--text-dim)",
-                  fontSize: 11,
-                  cursor: "pointer",
-                  fontFamily: "var(--font-dm), sans-serif",
-                  padding: "4px 0",
-                }}
-              >
-                ×
-              </button>
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--surface)", padding: "4px 8px", borderRadius: 6, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Leave?</span>
-                <button
-                  onClick={onExit}
-                  style={{
-                    background: "none",
-                    border: "1px solid var(--meter-red)",
-                    color: "var(--meter-red)",
-                    fontSize: 10,
-                    padding: "2px 8px",
-                    borderRadius: 3,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setConfirmingExit(false)}
-                  style={{
-                    background: "none",
-                    border: "1px solid var(--border-subtle)",
-                    color: "var(--text-muted)",
-                    fontSize: 10,
-                    padding: "2px 8px",
-                    borderRadius: 3,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  No
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Exit button */}
-        {!isMobile && (
-          <div style={{ marginTop: "auto", paddingTop: 24, width: "100%" }}>
-            {!confirmingExit ? (
-              <button
-                onClick={() => setConfirmingExit(true)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "var(--text-dim)",
-                  fontSize: 12,
-                  cursor: "pointer",
-                  fontFamily: "var(--font-dm), sans-serif",
-                  padding: "6px 0",
-                }}
-              >
-                Leave Chat ×
-              </button>
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Are you sure?</span>
-                <button
-                  onClick={onExit}
-                  style={{
-                    background: "none",
-                    border: "1px solid var(--meter-red)",
-                    color: "var(--meter-red)",
-                    fontSize: 11,
-                    padding: "3px 10px",
-                    borderRadius: 3,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setConfirmingExit(false)}
-                  style={{
-                    background: "none",
-                    border: "1px solid var(--border-subtle)",
-                    color: "var(--text-muted)",
-                    fontSize: 11,
-                    padding: "3px 10px",
-                    borderRadius: 3,
-                    cursor: "pointer",
-                    fontFamily: "var(--font-dm), sans-serif",
-                  }}
-                >
-                  No
-                </button>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* RIGHT PANEL */}
@@ -436,7 +475,8 @@ export default function TankScreen({
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          height: isMobile ? "calc(100vh - 180px)" : "100vh",
+          height: isMobile ? "auto" : "calc(100vh - 44px)",
+          minHeight: 0,
           position: "relative",
         }}
       >
@@ -463,29 +503,24 @@ export default function TankScreen({
                 animation: "fadeIn 0.6s ease both",
               }}
             >
-              <div
+              <img
+                src="/ashneer.png"
+                alt="Ashneer Grover"
                 style={{
                   width: 56,
                   height: 56,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #e8891a, #f0a500)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "var(--font-dm), sans-serif",
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: "#fff",
+                  objectFit: "cover",
+                  objectPosition: "center 15%",
                   boxShadow: "0 4px 16px rgba(232,137,26,0.25)",
+                  border: "2px solid rgba(232,137,26,0.3)",
                 }}
-              >
-                AG
-              </div>
+              />
               <p style={{ fontFamily: "var(--font-playfair), serif", fontSize: 18, color: "var(--text-primary)", fontStyle: "italic", textAlign: "center" }}>
                 Ashneer is watching.
               </p>
               <p style={{ fontFamily: "var(--font-dm), sans-serif", fontSize: 13, color: "var(--text-dim)", textAlign: "center", maxWidth: 300, lineHeight: 1.6 }}>
-                Present your idea, numbers, and vision. No excuses.
+                Apna idea, numbers, vision — seedha baat kar. Excuses mat de.
               </p>
             </div>
           )}
@@ -494,29 +529,25 @@ export default function TankScreen({
             <div key={i}>
               {msg.role === "assistant" ? (
                 <div style={{ display: "flex", gap: 12, alignItems: "flex-start", animation: "fadeUp 0.4s ease both", maxWidth: isMobile ? "95%" : "80%" }}>
-                  <div
+                  <img
+                    src="/ashneer.png"
+                    alt="AG"
                     style={{
                       width: 32,
                       height: 32,
                       borderRadius: "50%",
-                      background: msg.isError
-                        ? "linear-gradient(135deg, var(--meter-red), #e04545)"
-                        : "linear-gradient(135deg, #e8891a, #f0a500)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: "#fff",
+                      objectFit: "cover",
+                      objectPosition: "center 15%",
                       flexShrink: 0,
                       marginTop: 4,
+                      border: msg.isError
+                        ? "1.5px solid var(--meter-red)"
+                        : "1.5px solid rgba(232,137,26,0.3)",
                       boxShadow: msg.isError
                         ? "0 2px 8px rgba(211,47,47,0.2)"
                         : "0 2px 8px rgba(232,137,26,0.2)",
                     }}
-                  >
-                    AG
-                  </div>
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ fontFamily: "var(--font-dm), sans-serif", fontSize: 11, color: "var(--text-dim)", display: "block", marginBottom: 6, fontWeight: 500 }}>
                       Ashneer Grover
@@ -554,13 +585,13 @@ export default function TankScreen({
                         onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
                         onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
                       >
-                        Retry →
+                        Phir try kar →
                       </button>
                     )}
                   </div>
                 </div>
               ) : (
-                <div style={{ display: "flex", justifyContent: "flex-end", animation: "fadeUp 0.3s ease both" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, animation: "fadeUp 0.3s ease both" }}>
                   <div style={{ maxWidth: isMobile ? "85%" : "65%", minWidth: 0 }}>
                     <span style={{ fontFamily: "var(--font-dm), sans-serif", fontSize: 11, color: "var(--text-dim)", display: "block", marginBottom: 6, fontWeight: 500, textAlign: "right" }}>
                       You
@@ -580,6 +611,25 @@ export default function TankScreen({
                       {msg.text}
                     </div>
                   </div>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: "var(--surface-raised)",
+                      border: "1.5px solid var(--border-subtle)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      marginTop: 22,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                  </div>
                 </div>
               )}
             </div>
@@ -587,24 +637,20 @@ export default function TankScreen({
 
           {loading && (
             <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <div
+              <img
+                src="/ashneer.png"
+                alt="AG"
                 style={{
                   width: 32,
                   height: 32,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #e8891a, #f0a500)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#fff",
+                  objectFit: "cover",
+                  objectPosition: "center 15%",
                   flexShrink: 0,
+                  border: "1.5px solid rgba(232,137,26,0.3)",
                   boxShadow: "0 2px 8px rgba(232,137,26,0.2)",
                 }}
-              >
-                AG
-              </div>
+              />
               <div style={{ paddingTop: 4 }}>
                 <PenTapLoader />
               </div>
@@ -634,10 +680,10 @@ export default function TankScreen({
                 }}
               >
                 {canRequestVerdict
-                  ? "Verdict ready"
+                  ? "Faisla ready hai"
                   : exchangeCount > 0
-                  ? `Exchange ${exchangeCount} of 8`
-                  : "Start your pitch"}
+                  ? `Round ${exchangeCount} of 8`
+                  : "Pitch shuru kar"}
               </span>
               {exchangeCount > 0 && !canRequestVerdict && (
                 <div style={{ display: "flex", gap: 3 }}>
@@ -684,7 +730,7 @@ export default function TankScreen({
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
-                Get Verdict
+                Faisla Sunao
               </button>
             )}
           </div>
@@ -697,7 +743,7 @@ export default function TankScreen({
               onInput={handleTextareaInput}
               onKeyDown={handleKeyDown}
               disabled={loading}
-              placeholder="Type your response..."
+              placeholder="Bol. Seedha baat kar."
               rows={1}
               style={{
                 flex: 1,
@@ -757,6 +803,7 @@ export default function TankScreen({
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

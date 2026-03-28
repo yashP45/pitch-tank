@@ -138,71 +138,33 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
         India
       </span>
 
-      {/* Podium + Microphone */}
+      {/* Rupee symbol + divider */}
       <div
         style={{
-          position: "relative",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           marginBottom: 48,
           zIndex: 1,
           animation: "fadeIn 1.4s ease 0.5s both",
+          gap: 16,
         }}
       >
-        {/* Microphone */}
-        <div style={{ position: "relative", height: 90, marginBottom: 4 }}>
-          {/* Mic head */}
-          <div
-            style={{
-              width: 16,
-              height: 22,
-              borderRadius: "50% 50% 40% 40%",
-              background: "#2a2825",
-              border: "1px solid rgba(232,137,26,0.35)",
-              margin: "0 auto",
-              boxShadow: "0 0 12px rgba(232,137,26,0.15)",
-            }}
-          />
-          {/* Mic stand */}
-          <div
-            style={{
-              width: 2,
-              height: 66,
-              background: "linear-gradient(to bottom, rgba(232,137,26,0.45), rgba(232,137,26,0.08))",
-              margin: "0 auto",
-            }}
-          />
-        </div>
-
-        {/* Podium surface */}
-        <div
+        {/* <span
           style={{
-            width: 140,
-            height: 8,
-            background: "linear-gradient(to right, transparent, rgba(232,137,26,0.18), transparent)",
-            borderRadius: 2,
+            fontFamily: "var(--font-playfair), serif",
+            fontSize: 40,
+            color: "rgba(232,137,26,0.35)",
+            lineHeight: 1,
           }}
-        />
-        {/* Podium body */}
+        >
+          ₹
+        </span> */}
         <div
           style={{
-            width: 115,
-            height: 45,
-            background: "#141210",
-            borderLeft: "1px solid rgba(232,137,26,0.12)",
-            borderRight: "1px solid rgba(232,137,26,0.12)",
-            borderBottom: "1px solid rgba(232,137,26,0.08)",
-            clipPath: "polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)",
-          }}
-        />
-        {/* Stage floor line */}
-        <div
-          style={{
-            width: 280,
+            width: 80,
             height: 1,
-            background: "linear-gradient(to right, transparent, rgba(232,137,26,0.12), transparent)",
-            marginTop: 2,
+            background: "linear-gradient(to right, transparent, rgba(232,137,26,0.25), transparent)",
           }}
         />
       </div>
@@ -250,7 +212,7 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
           letterSpacing: "0.01em",
         }}
       >
-        Ashneer Grover is waiting. Have your idea ready.
+        Ashneer Grover wait kar raha hai. Idea ready rakh.
       </p>
 
       {/* CTA Button */}
@@ -284,7 +246,7 @@ export default function LobbyScreen({ onEnter }: LobbyScreenProps) {
           btn.style.color = "#e8891a";
         }}
       >
-        Take the Stage →
+        Stage Pe Aa →
       </button>
     </div>
   );

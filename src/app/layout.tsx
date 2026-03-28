@@ -18,6 +18,9 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Pitch Tank India",
   description: "Pitch your startup to Ashneer Grover — AI-powered Shark Tank India simulator",
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
     title: "Pitch Tank India",
     description: "Pitch your startup to Ashneer Grover — AI-powered Shark Tank India simulator",

@@ -10,9 +10,9 @@ function getZoneColor(value: number): string {
 }
 
 function getZoneLabel(value: number): string {
-  if (value <= 25) return "Pass";
-  if (value <= 50) return "Maybe";
-  if (value <= 75) return "Interesting";
+  if (value <= 25) return "Bilkul Nahi";
+  if (value <= 50) return "Sochna Padega";
+  if (value <= 75) return "Interesting Hai";
   return "Deal Zone";
 }
 
@@ -158,8 +158,8 @@ export default function FundabilityMeter({ value = 20, horizontal = false }: Fun
         >
           <span style={zoneLabelStyle}>Deal Zone</span>
           <span style={zoneLabelStyle}>Interesting</span>
-          <span style={zoneLabelStyle}>Maybe</span>
-          <span style={zoneLabelStyle}>Pass</span>
+          <span style={zoneLabelStyle}>Shayad</span>
+          <span style={zoneLabelStyle}>Nahi</span>
         </div>
       </div>
 
