@@ -1,6 +1,6 @@
 # Pitch Tank India
 
-An AI-powered Shark Tank India simulator where you pitch your startup idea to Ashneer Grover. He listens, reacts, pushes back, and gives you a brutally honest verdict — complete with a fundability score, breakdown, and a shareable result card.
+An AI-powered Shark Tank India simulator where you pitch your startup idea to Ashneer Grover. He listens, reacts, pushes back, and gives you a brutally honest verdict  complete with a fundability score, breakdown, and a shareable result card.
 
 Built with Next.js 14, the Anthropic API (Claude), and pure CSS — no component libraries.
 
@@ -15,9 +15,9 @@ Everything is in Ashneer's signature Hinglish voice. The chat persists across re
 
 ## Why this topic
 
-Lately I've been going through a lot of startup ideas and watching Shark Tank India obsessively. I kept thinking — what if I could stress-test my ideas before actually pitching them?
+Lately I've been going through a lot of startup ideas and watching Shark Tank India obsessively. I kept thinking  what if I could stress-test my ideas before actually pitching them?
 
-Ashneer Grover was the obvious choice. Nobody gives more brutal, specific, honest feedback. And that honesty is actually useful — not discouraging, just real.
+Ashneer Grover was the obvious choice. Nobody gives more brutal, specific, honest feedback. And that honesty is actually useful not discouraging, just real.
 
 So I built the thing I personally wanted to use.
 
